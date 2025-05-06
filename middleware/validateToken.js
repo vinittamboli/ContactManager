@@ -7,10 +7,15 @@ const validateToken = expressAsyncHandler(async(req, res, next) => {
     let authHeader = req.headers.Authorization || req.headers.authorization;
 
     if(authHeader && authHeader.startsWith("Bearer")){
-     token = authHeader.split(" ")[1];
-     JsonWebToken.verify(token, process.env.ACCESS_SECRET, (err, decoded) => {
+        
+        token = authHeader.split(" ")[1];
+        
+        JsonWebToken.verify(token, process.env.ACCESS_SECRET, (err, decoded) => {
+        
         if(err){
+        
             res.status(401);
+        
             throw new Error("User is not Authorised")
         }
 
@@ -20,14 +25,14 @@ const validateToken = expressAsyncHandler(async(req, res, next) => {
 
      });   
 
-     if(! token){
+     
+    }
+    if(! token){
 
         res.status(400)
         throw new Error("User is not Authorised or Token is missing/incorrect")
      }
 
-    }
-    
     
 })
 

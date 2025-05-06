@@ -18,7 +18,7 @@ const getUsers = async(req, res)=> {
 //Access private
 const registerUser = async(req, res)=> {
     
-    const {username,email,password} = req.body;
+    const {username,email,password, role} = req.body;
 
     if(!username || !email || !password){
         res.status(400);
@@ -39,7 +39,7 @@ const registerUser = async(req, res)=> {
     const hashedPassword = bcrypt.hashSync(password,10);
     console.log(hashedPassword);
 
-    const userCreated = await User.create({username, email, password:hashedPassword});
+    const userCreated = await User.create({username, email, password:hashedPassword, role : role || 'user'});
 
     res.status(201).json(`User Created : ${userCreated}`)
 }
@@ -71,7 +71,8 @@ const login = async(req, res)=> {
             user: {
                 username: user.username,
                 email: user.email,
-                id: user.id
+                id: user.id,
+                role: user.role
             }
         }, 
         process.env.ACCESS_SECRET,
@@ -96,8 +97,13 @@ const currentUser = async(req, res)=> {
 
 
 const deleteUser = async(req, res) => {
-
+    console.log("In delete function")
     const deleted = await User.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
     res.status(200).json({Message: "Deleted"})
 }
 
